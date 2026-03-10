@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: fruit-detector-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: YOLO_MODEL
+        value: yolov8n.pt
+      - key: CLASSIFIER_MODEL
+        value: models/fruit_adulteration_final.h5
