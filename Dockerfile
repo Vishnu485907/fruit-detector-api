@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install ALL system libs OpenCV needs
+# ALL system libs OpenCV needs (including libGL)
 RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     libgomp1 \
@@ -10,31 +10,36 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libsm6 \
     libxrender1 \
+    libgl1 \
     gcc \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-
-# Upgrade pip first
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
-# Install numpy FIRST at the version TF 2.13 needs
-RUN pip install --no-cache-dir "numpy==1.24.3"
+# Step 1: pin numpy + tensorflow FIRST
+RUN pip install --no-cache-dir \
+    "numpy==1.24.3" \
+    "typing-extensions==4.5.0"
 
-# Install TensorFlow (must come before ultralytics to lock numpy)
 RUN pip install --no-cache-dir "tensorflow==2.13.0"
 
-# Install OpenCV headless (no GUI libs needed)
-RUN pip install --no-cache-dir "opencv-python-headless==4.9.0.80"
+# Step 2: install ultralytics (this will upgrade numpy — we fix that next)
+RUN pip install --no-cache-dir \
+    "ultralytics==8.2.0" \
+    "opencv-python-headless==4.9.0.80"
 
-# Install the rest
+# Step 3: FORCE numpy back to TF-compatible version AFTER ultralytics
+RUN pip install --no-cache-dir --force-reinstall \
+    "numpy==1.24.3" \
+    "typing-extensions==4.5.0"
+
+# Step 4: FastAPI stack
 RUN pip install --no-cache-dir \
     "fastapi==0.111.0" \
     "uvicorn[standard]==0.29.0" \
     "python-multipart==0.0.9" \
-    "pydantic==2.7.1" \
-    "ultralytics==8.2.0"
+    "pydantic==2.7.1"
 
 COPY . .
 
