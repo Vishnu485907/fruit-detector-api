@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir "tensorflow==2.13.0"
 
 # Step 2: install ultralytics (this will upgrade numpy — we fix that next)
 RUN pip install --no-cache-dir \
-    "ultralytics==8.2.0" \
+    "ultralytics>=8.3.0" \
     "opencv-python-headless==4.9.0.80"
 
 # Step 3: FORCE numpy back to TF-compatible version AFTER ultralytics
