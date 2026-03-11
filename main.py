@@ -17,6 +17,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import uvicorn
+import torch
+import ultralytics
+torch.serialization.add_safe_globals([ultralytics.nn.tasks.DetectionModel])
 
 # ── lazy-load heavy deps so Render startup is faster ──
 _yolo = None
