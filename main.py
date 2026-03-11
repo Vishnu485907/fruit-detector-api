@@ -17,9 +17,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import uvicorn
-import torch
-import ultralytics
-torch.serialization.add_safe_globals([ultralytics.nn.tasks.DetectionModel])
+
 
 # ── lazy-load heavy deps so Render startup is faster ──
 _yolo = None
@@ -64,8 +62,8 @@ def get_yolo():
     global _yolo
     if _yolo is None:
         import torch
-        import ultralytics
-        torch.serialization.add_safe_globals([ultralytics.nn.tasks.DetectionModel])
+        from ultralytics.nn.tasks import DetectionModel
+        torch.serialization.add_safe_globals([DetectionModel])
         from ultralytics import YOLO
         _yolo = YOLO(YOLO_MODEL_PATH)
         print("✓ YOLO loaded")
