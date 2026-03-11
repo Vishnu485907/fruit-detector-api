@@ -63,6 +63,9 @@ app.add_middleware(
 def get_yolo():
     global _yolo
     if _yolo is None:
+        import torch
+        import ultralytics
+        torch.serialization.add_safe_globals([ultralytics.nn.tasks.DetectionModel])
         from ultralytics import YOLO
         _yolo = YOLO(YOLO_MODEL_PATH)
         print("✓ YOLO loaded")
